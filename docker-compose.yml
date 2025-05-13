@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  auth-server:
+    image: microservices-auth-server:latest
+    ports:
+      - "8080:8080"
+    environment:
+      JWT_SECRET: your-secret-key-that-is-long-and-secure
+    # healthcheck:  <-- Ta bort eller kommentera ut denna del
+    #   test: ["CMD", "curl", "-f", "http://auth-server:8080/health"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+
+  api-gateway:
+    image: microservices-api-gateway:latest
+    ports:
+      - "8081:8081"
+    environment:
+      JWT_SECRET: your-secret-key-that-is-long-and-secure
+    depends_on:
+      auth-server:
+        condition: service_started  # Ändrat från service_healthy
+      joke-service:
+        condition: service_started
+      quote-service:
+        condition: service_started
+
+  joke-service:
+    image: microservices-joke-service:latest
+    ports:
+      - "8082:8082"
+
+  quote-service:
+    image: microservices-quote-service:latest
+    ports:
+      - "8083:8083"
+
+networks:
+  default:
+    name: my-app-network
+    driver: bridge
