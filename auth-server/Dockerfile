@@ -1,12 +1,15 @@
+# Använd en bas-image med Java (OpenJDK 17 rekommenderas)
 FROM openjdk:17-jdk-slim
 
-WORKDIR /app
+# Skapa en volym för /tmp så applikationen kan skriva temporära filer
+VOLUME /tmp
 
-# Kopiera JAR-filen (byt ut mot ditt exakta filnamn)
-COPY target/auth-server-0.0.1-SNAPSHOT.jar auth-server.jar
+# Ange namnet på JAR-filen som ska kopieras (detta kommer att skapas av Maven)
+ARG JAR_FILE=target/*.jar
 
-# Exponera porten
-EXPOSE 8080
+# Kopiera den byggda JAR-filen från host-maskinen in i containern
+COPY ${JAR_FILE} app.jar
 
-# Startkommando
-ENTRYPOINT ["java", "-jar", "auth-server.jar"]
+# Ange kommandot för att köra applikationen när containern startas
+ENTRYPOINT ["java","-jar","/app.jar"]
+

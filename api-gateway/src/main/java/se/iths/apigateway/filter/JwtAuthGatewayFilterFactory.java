@@ -29,21 +29,42 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Jw
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
 
+            System.out.println("JwtAuthGatewayFilterFactory: Anrop mottaget för " + request.getURI());
+
             if (isSecured(request)) {
+                System.out.println("JwtAuthGatewayFilterFactory: Sökväg är skyddad.");
+
                 if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+                    System.out.println("JwtAuthGatewayFilterFactory: Saknar Authorization header.");
                     return onError(exchange, "Missing authorization header");
                 }
 
                 String authHeader = Objects.requireNonNull(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).get(0);
+                System.out.println("JwtAuthGatewayFilterFactory: Authorization header: " + authHeader);
+
                 if (!authHeader.startsWith("Bearer ")) {
+                    System.out.println("JwtAuthGatewayFilterFactory: Ogiltigt format på Authorization header.");
                     return onError(exchange, "Invalid authorization header format");
                 }
 
                 String token = authHeader.substring(7);
-                if (!jwtValidationService.isTokenValid(token)) {
+                System.out.println("JwtAuthGatewayFilterFactory: Extraherad token: " + token);
+
+                boolean isTokenValid = jwtValidationService.isTokenValid(token);
+                System.out.println("JwtAuthGatewayFilterFactory: Token är " + (isTokenValid ? "giltig" : "ogiltig"));
+
+                if (!isTokenValid) {
+                    System.out.println("JwtAuthGatewayFilterFactory: Ogiltig JWT token.");
                     return onError(exchange, "Invalid JWT token");
                 }
+            } else {
+                System.out.println("JwtAuthGatewayFilterFactory: Sökväg är inte skyddad.");
             }
+
+            // Logga alla headers precis innan anropet kedjas vidare
+            System.out.println("JwtAuthGatewayFilterFactory: Headers innan kedjan anropas:");
+            request.getHeaders().forEach((name, values) -> System.out.println("  " + name + ": " + values));
+
             return chain.filter(exchange);
         };
     }
@@ -55,10 +76,10 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Jw
     }
 
     private boolean isSecured(ServerHttpRequest request) {
-        // Definiera vilka sökvägar som är skyddade, exkludera /api/auth
+        // Definiera vilka sökvägar som är skyddade
         String path = request.getURI().getPath();
-        return path.startsWith("/api/jokes") ||
-                path.startsWith("/api/quotes");
+        return path.startsWith("/jokes") ||
+                path.startsWith("/quotes");
     }
 
     public static class Config {
