@@ -1,7 +1,6 @@
-version: '3.8'
-
 services:
   auth-server:
+    build: ./auth-server
     image: microservices-auth-server:latest
     ports:
       - "8080:8080"
@@ -9,50 +8,24 @@ services:
       - my-network
 
   api-gateway:
+    build: ./api-gateway
     image: microservices-api-gateway:latest
     ports:
       - "8081:8081"
-    environment:
-      jwt.secret: your-secret-key-that-is-long-and-secure  # Måste matcha auth-server
-      # Auth-service route
-      SPRING_CLOUD_GATEWAY_ROUTES_0_ID: auth-service
-      SPRING_CLOUD_GATEWAY_ROUTES_0_URI: http://auth-server:8080
-      SPRING_CLOUD_GATEWAY_ROUTES_0_PREDICATES_0: Path=/api/auth/**
-      SPRING_CLOUD_GATEWAY_ROUTES_0_FILTERS_0: RewritePath=/api/auth/(?<segment>.*), /auth/$${segment}  # Fix: $$ för att escape $
-      SPRING_CLOUD_GATEWAY_ROUTES_0_FILTERS_1: SetRequestHeader=Content-Type, application/json
-      # Joke-service route
-      SPRING_CLOUD_GATEWAY_ROUTES_1_ID: joke-service
-      SPRING_CLOUD_GATEWAY_ROUTES_1_URI: http://joke-service:8082
-      SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0: Path=/api/jokes/**
-      SPRING_CLOUD_GATEWAY_ROUTES_1_FILTERS_0: RewritePath=/api/jokes/(?<segment>.*), /jokes/${segment}
-      SPRING_CLOUD_GATEWAY_ROUTES_1_FILTERS_1: JwtAuth
-      # Quote-service route
-      SPRING_CLOUD_GATEWAY_ROUTES_2_ID: quote-service
-      SPRING_CLOUD_GATEWAY_ROUTES_2_URI: http://quote-service:8083
-      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0: Path=/api/quotes/**
-      SPRING_CLOUD_GATEWAY_ROUTES_2_FILTERS_0: RewritePath=/api/quotes/(?<segment>.*), /quotes/${segment}
-      SPRING_CLOUD_GATEWAY_ROUTES_2_FILTERS_1: JwtAuth
-      # Logging
-      logging.level.org.springframework.cloud.gateway: DEBUG
-      logging.level.org.springframework.web: DEBUG
-    depends_on:
-      - auth-server
-      - joke-service
-      - quote-service
     networks:
       - my-network
+    depends_on:
+      - auth-server
 
   joke-service:
+    build: ./joke-service
     image: microservices-joke-service:latest
-    ports:
-      - "8082:8082"
     networks:
       - my-network
 
   quote-service:
+    build: ./quote-service
     image: microservices-quote-service:latest
-    ports:
-      - "8083:8083"
     networks:
       - my-network
 
