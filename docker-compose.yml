@@ -11,18 +11,18 @@ services:
     build: ./api-gateway
     image: microservices-api-gateway:latest
     ports:
-      - "8081:8081" # Notera att du använder 8081 här, inte 8080 som i k8s
+      - "8081:8081"
     networks:
       - my-network
     depends_on:
       - auth-server
-    environment: # <--- LÄGG TILL DENNA BLOCKET
-      - SPRING_PROFILES_ACTIVE=docker # <--- Aktivera 'docker'-profilen för Docker Compose
-      # Kontrollera även din server.port i application-docker.properties.
-      # Om din API Gateway ska lyssna på 8081 i Docker Compose,
-      # måste din application-docker.properties ha server.port=8081.
-      # Din docker-compose.yaml har 8081:8081, så det matchar.
-      # Din k8s-deployment har 8080:8080, så då måste application-kubernetes.properties ha server.port=8080.
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker # <--- Aktiverar 'docker'-profilen för Docker Compose
+      # Kontrollerar även server.port i application-docker.properties.
+      # Om API Gateway ska lyssna på 8081 i Docker Compose,
+      # application-docker.properties måste ha server.port=8081.
+      # Docker-compose.yaml har 8081:8081, så det matchar.
+      # k8s-deployment har 8080:8080, så då måste application-kubernetes.properties ha server.port=8080.
 
   joke-service:
     build: ./joke-service

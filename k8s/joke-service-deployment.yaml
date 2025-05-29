@@ -11,18 +11,18 @@ spec:
       app: joke-service
   template:
     metadata:
-      name: joke-service # Updated to match service name
+      name: joke-service
       labels:
         app: joke-service
     spec:
       containers:
         - name: joke-service
           image: microservices-joke-service:latest
-          imagePullPolicy: IfNotPresent # Added
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
-              protocol: TCP # Added
+              protocol: TCP
           env:
             - name: SERVER_PORT
               value: "8080"
-      restartPolicy: Always # Added
+      restartPolicy: Always

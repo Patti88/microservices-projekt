@@ -32,6 +32,6 @@ spec:
               value: "http://quote-service-service:8080"
             - name: JWT_SECRET
               value: "your-secret-key-that-is-long-and-secure"
-            # DEBUG-VARIABLER (VALFRITT)
+            # DEBUG-VARIABLER, valfritt
             - name: LOGGING_LEVEL_ROOT
               value: DEBUG

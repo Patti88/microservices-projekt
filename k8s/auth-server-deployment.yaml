@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-server-deployment
-  labels: # Added for consistency
+  labels:
     app: auth-server
 spec:
   replicas: 1
@@ -11,18 +11,18 @@ spec:
       app: auth-server
   template:
     metadata:
-      name: auth-server # Updated to match service name
+      name: auth-server
       labels:
         app: auth-server
     spec:
       containers:
         - name: auth-server
           image: microservices-auth-server:latest
-          imagePullPolicy: IfNotPresent # Added for consistency
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
-              protocol: TCP # Added for consistency
+              protocol: TCP
           env:
             - name: SERVER_PORT
               value: "8080"
-      restartPolicy: Always # Added for consistency
+      restartPolicy: Always
