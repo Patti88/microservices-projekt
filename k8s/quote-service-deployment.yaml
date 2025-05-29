@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quote-service-deployment
+  labels:
+    app: quote-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quote-service
+  template:
+    metadata:
+      name: quote-service
+      labels:
+        app: quote-service
+    spec:
+      containers:
+        - name: quote-service
+          image: microservices-quote-service:latest
+          imagePullPolicy: IfNotPresent # Added for consistency
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+      restartPolicy: Always

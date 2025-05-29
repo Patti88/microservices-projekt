@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: title
+  labels:
+    app: title
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: title
+  template:
+    metadata:
+      name: title
+      labels:
+        app: title
+    spec:
+      containers:
+        - name: title
+          image: microservices-quote-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always
+      

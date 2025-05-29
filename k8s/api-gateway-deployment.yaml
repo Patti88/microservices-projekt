@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: microservices-api-gateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kubernetes
+            - name: SERVER_PORT
+              value: "80"
+            # KRITISKA MILJÖVARIABLER FÖR TJÄNST-URL:ER
+            - name: AUTH_SERVER_BASE_URL
+              value: "http://auth-server-service:8080"
+            - name: JOKE_SERVICE_BASE_URL
+              value: "http://joke-service-service:8080"
+            - name: QUOTE_SERVICE_BASE_URL
+              value: "http://quote-service-service:8080"
+            - name: JWT_SECRET
+              value: "your-secret-key-that-is-long-and-secure"
+            # DEBUG-VARIABLER (VALFRITT)
+            - name: LOGGING_LEVEL_ROOT
+              value: DEBUG

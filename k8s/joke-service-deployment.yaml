@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: joke-service-deployment
+  labels:
+    app: joke-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joke-service
+  template:
+    metadata:
+      name: joke-service # Updated to match service name
+      labels:
+        app: joke-service
+    spec:
+      containers:
+        - name: joke-service
+          image: microservices-joke-service:latest
+          imagePullPolicy: IfNotPresent # Added
+          ports:
+            - containerPort: 8080
+              protocol: TCP # Added
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+      restartPolicy: Always # Added

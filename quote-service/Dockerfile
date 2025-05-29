@@ -12,4 +12,3 @@ COPY ${JAR_FILE} app.jar
 
 # Ange kommandot för att köra applikationen när containern startas
 ENTRYPOINT ["java","-jar","/app.jar"]
-

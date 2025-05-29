@@ -76,12 +76,19 @@ public class JwtAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<Jw
     }
 
     private boolean isSecured(ServerHttpRequest request) {
-        // Definiera vilka sökvägar som är skyddade
         String path = request.getURI().getPath();
-        return path.startsWith("/jokes") ||
+        System.out.println("Securing path: " + path);
+
+        // Tillåt auth-endpoints utan JWT
+        if (path.startsWith("/api/auth") || path.startsWith("/auth")) {
+            return false;
+        }
+
+        return path.startsWith("/api/jokes") ||
+                path.startsWith("/jokes") ||
+                path.startsWith("/api/quotes") ||
                 path.startsWith("/quotes");
     }
-
     public static class Config {
         // Inga konfigurationsparametrar för tillfället
     }
