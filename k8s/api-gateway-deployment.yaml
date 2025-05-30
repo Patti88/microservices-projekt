@@ -1,37 +1,80 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"api-gateway-deployment","namespace":"default"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"api-gateway"}},"template":{"metadata":{"labels":{"app":"api-gateway"}},"spec":{"containers":[{"env":[{"name":"SPRING_PROFILES_ACTIVE","value":"kubernetes"},{"name":"SERVER_PORT","value":"80"},{"name":"AUTH_SERVER_BASE_URL","value":"http://auth-server-service:8080"},{"name":"JOKE_SERVICE_BASE_URL","value":"http://joke-service-service:8080"},{"name":"QUOTE_SERVICE_BASE_URL","value":"http://quote-service-service:8080"},{"name":"JWT_SECRET","value":"your-secret-key-that-is-long-and-secure"},{"name":"LOGGING_LEVEL_ROOT","value":"DEBUG"}],"image":"microservices-api-gateway:latest","imagePullPolicy":"IfNotPresent","name":"api-gateway","ports":[{"containerPort":80}]}]}}}}
+  creationTimestamp: "2025-05-29T18:41:52Z"
+  generation: 1
   name: api-gateway-deployment
+  namespace: default
+  resourceVersion: "58425"
+  uid: 6db1c602-839c-48c2-8f16-50e6cb8af57d
 spec:
+  progressDeadlineSeconds: 600
   replicas: 1
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: api-gateway
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
+      creationTimestamp: null
       labels:
         app: api-gateway
     spec:
       containers:
-        - name: api-gateway
-          image: microservices-api-gateway:latest
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 80
-          env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: kubernetes
-            - name: SERVER_PORT
-              value: "80"
-            # KRITISKA MILJÖVARIABLER FÖR TJÄNST-URL:ER
-            - name: AUTH_SERVER_BASE_URL
-              value: "http://auth-server-service:8080"
-            - name: JOKE_SERVICE_BASE_URL
-              value: "http://joke-service-service:8080"
-            - name: QUOTE_SERVICE_BASE_URL
-              value: "http://quote-service-service:8080"
-            - name: JWT_SECRET
-              value: "your-secret-key-that-is-long-and-secure"
-            # DEBUG-VARIABLER, valfritt
-            - name: LOGGING_LEVEL_ROOT
-              value: DEBUG
+      - env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: kubernetes
+        - name: SERVER_PORT
+          value: "80"
+        - name: AUTH_SERVER_BASE_URL
+          value: http://auth-server-service:8080
+        - name: JOKE_SERVICE_BASE_URL
+          value: http://joke-service-service:8080
+        - name: QUOTE_SERVICE_BASE_URL
+          value: http://quote-service-service:8080
+        - name: JWT_SECRET
+          value: your-secret-key-that-is-long-and-secure
+        - name: LOGGING_LEVEL_ROOT
+          value: DEBUG
+        image: microservices-api-gateway:latest
+        imagePullPolicy: IfNotPresent
+        name: api-gateway
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2025-05-29T18:42:12Z"
+    lastUpdateTime: "2025-05-29T18:42:12Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2025-05-29T18:41:53Z"
+    lastUpdateTime: "2025-05-29T18:42:12Z"
+    message: ReplicaSet "api-gateway-deployment-7948bbb97" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
